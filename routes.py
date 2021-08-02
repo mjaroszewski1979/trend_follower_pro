@@ -11,18 +11,18 @@ main = Blueprint('main', __name__)
 
 
 
-main.route('/')
+@main.route('/')
 def index_get():
     all_markets = Markets.query.order_by(Markets.name).all()
     return render_template('index.html',all_markets=all_markets,  data=markets_data )
 
-main.route('/pro')
+@main.route('/pro')
 @flask_login.login_required
 def pro_get():
     all_markets = MarketsPro.query.order_by(MarketsPro.name).all()
     return render_template('pro.html',all_markets=all_markets,  data=marketspro_data)
 
-main.route('/', methods=['POST'])
+@main.route('/', methods=['POST'])
 def index_post():
     err_msg = ''
     new_market = request.form.get('market')
@@ -48,7 +48,7 @@ def index_post():
         flash('MARKET ADDED. BECOME A PRO MEMBER AND GET ACCESS TO MORE FINANCIAL INSTRUMENTS!')
     return redirect(url_for('main.index_get'))
 
-main.route('/pro', methods=['POST'])
+@main.route('/pro', methods=['POST'])
 @flask_login.login_required
 def pro_post():
     err_msg = ''
@@ -72,14 +72,14 @@ def pro_post():
 
 
 
-main.route('/delete/<int:id>')
+@main.route('/delete/<int:id>')
 def delete(id):
     market = Markets.query.get_or_404(id)
     db.session.delete(market)
     db.session.commit()
     return redirect(url_for('main.index_get'))
 
-main.route('/delete_pro/<int:id>')
+@main.route('/delete_pro/<int:id>')
 @flask_login.login_required
 def delete_pro(id):
     market = MarketsPro.query.get_or_404(id)
@@ -87,7 +87,7 @@ def delete_pro(id):
     db.session.commit()
     return redirect(url_for('main.pro_get'))
 
-main.route('/update/<int:id>')
+@main.route('/update/<int:id>')
 def update(id):
     market = Markets.query.get_or_404(id)
     symbol = market.symbol
@@ -96,7 +96,7 @@ def update(id):
     db.session.commit()
     return redirect(url_for('main.index_get'))
 
-main.route('/update_pro/<int:id>')
+@main.route('/update_pro/<int:id>')
 @flask_login.login_required
 def update_pro(id):
     market = MarketsPro.query.get_or_404(id)
@@ -106,7 +106,7 @@ def update_pro(id):
     db.session.commit()
     return redirect(url_for('main.pro_get'))
 
-main.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -126,13 +126,13 @@ def login():
 
 
 
-main.route('/logout')
+@main.route('/logout')
 @flask_login.login_required
 def logout():
     flask_login.logout_user()
     return render_template('logout.html')
 
-main.route('/register', methods=['GET', 'POST'])
+@main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == "POST":
         name = request.form['name']
@@ -148,10 +148,10 @@ def register():
 def unauthorized_handler():
     return render_template('unauthorized.html')
 
-main.app_errorhandler(404)
+@main.app_errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
 
-main.app_errorhandler(500)
+@main.app_errorhandler(500)
 def internal_server_error(e):
     return render_template('500.html'), 500
